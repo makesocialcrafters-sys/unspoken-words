@@ -93,7 +93,7 @@ const Pricing = () => (
         badge="Beliebt"
         featured
         features={[
-          "15 Briefe pro Monat",
+          "30 Briefe pro Monat",
           "Unlimitierte Zeichen",
           "Feed lesen + teilen",
           "Private Briefe",
