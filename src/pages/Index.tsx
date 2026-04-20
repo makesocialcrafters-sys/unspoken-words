@@ -1,6 +1,7 @@
 import Nav from "@/components/frauenmoment/Nav";
 import Hero from "@/components/frauenmoment/Hero";
 import QuoteBand from "@/components/frauenmoment/QuoteBand";
+import Stats from "@/components/frauenmoment/Stats";
 import HowItWorks from "@/components/frauenmoment/HowItWorks";
 import Feed from "@/components/frauenmoment/Feed";
 import Testimonials from "@/components/frauenmoment/Testimonials";
@@ -15,6 +16,7 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <Nav />
       <Hero />
+      <Stats />
       <QuoteBand />
       <HowItWorks />
       <Feed />
