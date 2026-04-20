@@ -73,31 +73,42 @@ const Pricing = () => (
       Wähle deinen <em className="italic text-rose">Moment.</em>
     </h2>
 
-    <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-16">
+    <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mt-16">
       <PricingCard
-        plan="Kostenlos"
+        plan="Gratis"
         price="0€"
-        per="für immer"
+        per="pro Monat"
         features={[
           "3 Briefe pro Monat",
-          "Antwort von Frauenmoment",
-          "Anonymer Feed lesen",
-          "Herzen vergeben",
+          "Unlimitierte Zeichen",
+          "Antworten inklusive",
+          "Feed lesen",
         ]}
         cta="Kostenlos starten"
+      />
+      <PricingCard
+        plan="Basis"
+        price="4,99€"
+        per="pro Monat · jederzeit kündbar"
+        badge="Beliebt"
+        featured
+        features={[
+          "15 Briefe pro Monat",
+          "Unlimitierte Zeichen",
+          "Feed lesen + teilen",
+          "Private Briefe",
+        ]}
+        cta="Basis starten"
       />
       <PricingCard
         plan="Premium"
         price="9€"
         per="pro Monat · jederzeit kündbar"
-        badge="Beliebt"
-        featured
         features={[
           "Unlimitierte Briefe",
           "Frauenmoment kennt deine Geschichte",
           "Antwort als dein Zukunfts-Ich",
-          "Priorität im Feed",
-          "Private Briefe (nicht sichtbar)",
+          "Alle Features",
         ]}
         cta="Jetzt Premium starten"
       />
