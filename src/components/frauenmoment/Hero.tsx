@@ -30,10 +30,6 @@ const Hero = () => {
     <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative overflow-hidden">
       {/* Left */}
       <div className="flex flex-col justify-center px-6 md:px-14 pt-36 pb-20 relative z-10">
-        <div className="eyebrow mb-7 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          Für Frauen &amp; Schülerinnen · Deutschland &amp; Österreich
-        </div>
-
         <h1
           className="font-serif text-[3.8rem] md:text-[5.5rem] xl:text-[6.5rem] leading-[1.04] text-deep animate-fade-up text-balance"
           style={{ animationDelay: '0.5s' }}
