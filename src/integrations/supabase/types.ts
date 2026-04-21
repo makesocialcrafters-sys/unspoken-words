@@ -101,6 +101,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          age_group: string | null
+          city: string | null
+          created_at: string
+          id: string
+          nickname: string | null
+          onboarded_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age_group?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          onboarded_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age_group?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          onboarded_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
