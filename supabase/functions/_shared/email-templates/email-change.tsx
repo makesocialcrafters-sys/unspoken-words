@@ -9,8 +9,8 @@ import {
   Head,
   Heading,
   Html,
-  Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
@@ -22,38 +22,38 @@ interface EmailChangeEmailProps {
 }
 
 export const EmailChangeEmail = ({
-  siteName,
   email,
   newEmail,
   confirmationUrl,
 }: EmailChangeEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for {siteName}</Preview>
+    <Preview>Bestätige deine neue E-Mail Adresse für Frauenmoment</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email change</Heading>
-        <Text style={text}>
-          You requested to change your email address for {siteName} from{' '}
-          <Link href={`mailto:${email}`} style={link}>
-            {email}
-          </Link>{' '}
-          to{' '}
-          <Link href={`mailto:${newEmail}`} style={link}>
-            {newEmail}
-          </Link>
-          .
-        </Text>
-        <Text style={text}>
-          Click the button below to confirm this change:
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Confirm Email Change
-        </Button>
-        <Text style={footer}>
-          If you didn't request this change, please secure your account
-          immediately.
-        </Text>
+        <Section style={card}>
+          <Text style={brand}>FRAUENMOMENT</Text>
+          <Heading style={h1}>
+            Bestätige deine<br />
+            <em style={emphasis}>neue Adresse.</em>
+          </Heading>
+          <Text style={text}>
+            Du hast angefragt, deine E-Mail Adresse von <strong>{email}</strong>{' '}
+            zu <strong>{newEmail}</strong> zu ändern.
+          </Text>
+          <Section style={buttonWrap}>
+            <Button style={button} href={confirmationUrl}>
+              Änderung bestätigen
+            </Button>
+          </Section>
+          <div style={divider} />
+          <Text style={footer}>
+            Wenn du das nicht angefragt hast, sichere bitte sofort dein Konto.
+          </Text>
+          <Text style={footerSmall}>
+            Dein Name bleibt anonym. Nur zur Sicherheit deines Kontos.
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -61,27 +61,15 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
-}
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const main = { backgroundColor: '#ffffff', fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', margin: 0, padding: '40px 20px' }
+const container = { maxWidth: '520px', margin: '0 auto' }
+const card = { backgroundColor: '#FAF6F2', padding: '56px 44px', borderTop: '3px solid #C4785A' }
+const brand = { fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '11px', letterSpacing: '0.32em', color: '#C4785A', margin: '0 0 40px', fontWeight: 400 }
+const h1 = { fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '40px', fontWeight: 300, color: '#241B16', lineHeight: 1.1, margin: '0 0 28px' }
+const emphasis = { fontStyle: 'italic', color: '#C4785A', fontWeight: 300 }
+const text = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '15px', color: '#5C4F47', lineHeight: 1.7, margin: '0 0 36px', fontWeight: 300 }
+const buttonWrap = { textAlign: 'center' as const, margin: '0 0 40px' }
+const button = { backgroundColor: '#241B16', color: '#FAF6F2', fontSize: '12px', letterSpacing: '0.18em', textTransform: 'uppercase' as const, padding: '16px 36px', textDecoration: 'none', fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontWeight: 400, display: 'inline-block' }
+const divider = { height: '1px', background: 'linear-gradient(to right, transparent, #EFC9B6, transparent)', margin: '0 0 28px' }
+const footer = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '12px', color: '#9C8B82', lineHeight: 1.6, margin: '0 0 8px' }
+const footerSmall = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '11px', color: '#B5A89F', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }
