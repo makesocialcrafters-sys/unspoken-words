@@ -18,7 +18,7 @@ const Nav = () => {
           Preise
         </a>
         <a
-          href="#cta"
+          href="/signin"
           className="bg-deep text-cream px-5 md:px-7 py-3 text-[0.72rem] tracking-[0.15em] uppercase hover:bg-rose transition-colors"
         >
           Jetzt starten

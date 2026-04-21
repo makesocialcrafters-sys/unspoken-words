@@ -52,10 +52,10 @@ const Hero = () => {
           style={{ animationDelay: '0.9s' }}
         >
           <a
-            href="#cta"
+            href="/signin"
             className="group relative overflow-hidden bg-deep text-cream px-9 py-4 text-[0.78rem] tracking-[0.15em] uppercase"
           >
-            <span className="relative z-10">Deinen Moment schreiben</span>
+            <span className="relative z-10">Jetzt starten</span>
             <span className="absolute inset-0 bg-rose -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
           </a>
           <a
