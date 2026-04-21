@@ -8,6 +8,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Preview,
   Section,
@@ -42,7 +43,7 @@ export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
               Einladung annehmen
             </Button>
           </Section>
-          <div style={divider} />
+          <Hr style={divider} />
           <Text style={footer}>
             Wenn du diese Einladung nicht erwartet hast, kannst du diese Mail ignorieren.
           </Text>
@@ -66,6 +67,6 @@ const emphasis = { fontStyle: 'italic', color: '#C4785A', fontWeight: 300 }
 const text = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '15px', color: '#5C4F47', lineHeight: 1.7, margin: '0 0 36px', fontWeight: 300 }
 const buttonWrap = { textAlign: 'center' as const, margin: '0 0 40px' }
 const button = { backgroundColor: '#241B16', color: '#FAF6F2', fontSize: '12px', letterSpacing: '0.18em', textTransform: 'uppercase' as const, padding: '16px 36px', textDecoration: 'none', fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontWeight: 400, display: 'inline-block' }
-const divider = { height: '1px', background: 'linear-gradient(to right, transparent, #EFC9B6, transparent)', margin: '0 0 28px' }
+const divider = { borderColor: '#EFC9B6', borderWidth: '0 0 1px 0', borderStyle: 'solid', margin: '0 0 28px', width: '100%' }
 const footer = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '12px', color: '#9C8B82', lineHeight: 1.6, margin: '0 0 8px' }
 const footerSmall = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '11px', color: '#B5A89F', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }

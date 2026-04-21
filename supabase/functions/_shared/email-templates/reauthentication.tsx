@@ -7,6 +7,7 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Preview,
   Section,
@@ -33,7 +34,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
             Verwende den Code unten, um deine Identität zu bestätigen:
           </Text>
           <Text style={codeStyle}>{token}</Text>
-          <div style={divider} />
+          <Hr style={divider} />
           <Text style={footer}>
             Dieser Code läuft bald ab. Wenn du das nicht angefordert hast,
             kannst du diese Mail ignorieren.
@@ -57,6 +58,6 @@ const h1 = { fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '40px
 const emphasis = { fontStyle: 'italic', color: '#C4785A', fontWeight: 300 }
 const text = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '15px', color: '#5C4F47', lineHeight: 1.7, margin: '0 0 24px', fontWeight: 300 }
 const codeStyle = { fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: '36px', letterSpacing: '0.25em', color: '#C4785A', textAlign: 'center' as const, margin: '0 0 40px', fontWeight: 400 }
-const divider = { height: '1px', background: 'linear-gradient(to right, transparent, #EFC9B6, transparent)', margin: '0 0 28px' }
+const divider = { borderColor: '#EFC9B6', borderWidth: '0 0 1px 0', borderStyle: 'solid', margin: '0 0 28px', width: '100%' }
 const footer = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '12px', color: '#9C8B82', lineHeight: 1.6, margin: '0 0 8px' }
 const footerSmall = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '11px', color: '#B5A89F', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }
