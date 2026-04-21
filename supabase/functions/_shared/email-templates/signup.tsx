@@ -25,30 +25,38 @@ interface SignupEmailProps {
 export const SignupEmail = ({ confirmationUrl }: SignupEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Bestätige deine E-Mail Adresse für Frauenmoment</Preview>
+    <Preview>Hallo, bitte bestätige kurz deine E-Mail-Adresse.</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={card}>
           <Text style={brand}>FRAUENMOMENT</Text>
           <Heading style={h1}>
-            Bestätige deine<br />
-            <em style={emphasis}>E-Mail Adresse.</em>
+            Schön, dass du<br />
+            <em style={emphasis}>da bist.</em>
           </Heading>
           <Text style={text}>
-            Du hast dich bei Frauenmoment registriert — einem anonymen Ort
-            für ungesendete Briefe und unausgesprochene Gedanken.
+            Du hast dich gerade bei Frauenmoment registriert. Damit wir
+            sicher sein können, dass diese Adresse dir gehört, bitten wir
+            dich, sie einmal kurz zu bestätigen.
           </Text>
           <Section style={buttonWrap}>
             <Button style={button} href={confirmationUrl}>
               E-Mail bestätigen
             </Button>
           </Section>
+          <Text style={text}>
+            Falls der Button nicht funktioniert, kopiere bitte diesen Link
+            in deinen Browser:<br />
+            <span style={linkText}>{confirmationUrl}</span>
+          </Text>
           <Hr style={divider} />
           <Text style={footer}>
-            Wenn du dich nicht registriert hast, kannst du diese Mail ignorieren.
+            Du hast dich nicht registriert? Dann kannst du diese Nachricht
+            einfach ignorieren — es passiert nichts weiter.
           </Text>
           <Text style={footerSmall}>
-            Dein Name bleibt anonym. Nur zur Sicherheit deines Kontos.
+            Diese E-Mail wurde von Frauenmoment gesendet, weil eine
+            Registrierung mit deiner Adresse angefragt wurde.
           </Text>
         </Section>
       </Container>
@@ -70,3 +78,4 @@ const button = { backgroundColor: '#241B16', color: '#FAF6F2', fontSize: '12px',
 const divider = { borderColor: '#EFC9B6', borderWidth: '0 0 1px 0', borderStyle: 'solid', margin: '0 0 28px', width: '100%' }
 const footer = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '12px', color: '#9C8B82', lineHeight: 1.6, margin: '0 0 8px' }
 const footerSmall = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '11px', color: '#B5A89F', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }
+const linkText = { fontFamily: '"DM Sans", Helvetica, Arial, sans-serif', fontSize: '12px', color: '#C4785A', wordBreak: 'break-all' as const }
