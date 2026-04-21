@@ -17,7 +17,7 @@ const corsHeaders = {
 }
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Bitte bestätige deine E-Mail-Adresse',
+  signup: 'Bestätige deine Email',
   invite: 'Deine Einladung zu Frauenmoment',
   magiclink: 'Dein Anmeldelink für Frauenmoment',
   recovery: 'Passwort zurücksetzen',
