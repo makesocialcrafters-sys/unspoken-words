@@ -14,10 +14,10 @@ const SignIn = () => {
   useEffect(() => {
     document.title = "Anmelden – Frauenmoment";
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (session) navigate("/app", { replace: true });
+      if (session) navigate("/onboarding", { replace: true });
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/app", { replace: true });
+      if (session) navigate("/onboarding", { replace: true });
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
@@ -25,7 +25,7 @@ const SignIn = () => {
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/app`,
+      redirect_uri: `${window.location.origin}/onboarding`,
     });
     if (result.error) {
       toast.error("Anmeldung fehlgeschlagen.");
@@ -42,7 +42,7 @@ const SignIn = () => {
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (!signInError) {
-      navigate("/app", { replace: true });
+      navigate("/onboarding", { replace: true });
       return;
     }
 
@@ -51,7 +51,7 @@ const SignIn = () => {
       const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/app` },
+        options: { emailRedirectTo: `${window.location.origin}/onboarding` },
       });
       if (signUpError) {
         toast.error(signUpError.message);
