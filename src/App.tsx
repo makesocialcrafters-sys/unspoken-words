@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import AppHome from "./pages/AppHome.tsx";
+import Onboarding from "./pages/Onboarding.tsx";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,14 @@ const App = () => (
                 <RedirectIfAuthed>
                   <SignIn />
                 </RedirectIfAuthed>
+              }
+            />
+            <Route
+              path="/onboarding"
+              element={
+                <RequireAuth>
+                  <Onboarding />
+                </RequireAuth>
               }
             />
             <Route
