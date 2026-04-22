@@ -45,7 +45,7 @@ const AppHome = () => {
   return (
     <main className="min-h-screen bg-background">
       <nav className="flex justify-between items-center px-6 md:px-14 py-7">
-        <Link to="/" className="flex items-center gap-3 no-underline">
+        <Link to="/app" className="flex items-center gap-3 no-underline">
           <Feather className="h-4 w-4 text-rose" strokeWidth={1.5} />
           <span className="font-serif text-base tracking-[0.2em] uppercase text-deep">
             Frauen<span className="text-rose">moment</span>
