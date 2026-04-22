@@ -310,7 +310,7 @@ const Settings = () => {
   const [deleting, setDeleting] = useState(false);
 
   // Plan (placeholder until billing is wired)
-  const plan: Plan = "Gratis";
+  const plan = "Gratis" as Plan;
   const lettersUsed = 1;
   const lettersLimit = 3;
   const nextBilling: string | null = null;
