@@ -78,6 +78,13 @@ const AppHome = () => {
           Hier kannst du anfangen zu schreiben — sicher, anonym, ohne Urteil.
           Dein erster Moment wartet.
         </p>
+        <Link
+          to="/write"
+          className="mt-10 inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-7 py-4 text-[0.72rem] tracking-[0.18em] uppercase transition-colors"
+        >
+          <Feather className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Brief schreiben
+        </Link>
       </section>
     </main>
   );

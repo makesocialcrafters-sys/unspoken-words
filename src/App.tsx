@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import AppHome from "./pages/AppHome.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import Write from "./pages/Write.tsx";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,14 @@ const App = () => (
               element={
                 <RequireAuth>
                   <AppHome />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/write"
+              element={
+                <RequireAuth>
+                  <Write />
                 </RequireAuth>
               }
             />
