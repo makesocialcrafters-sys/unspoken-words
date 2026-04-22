@@ -59,12 +59,14 @@ const AppHome = () => {
           >
             Abmelden
           </button>
-          <div
-            title={user?.email ?? ""}
-            className="h-10 w-10 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider"
+          <Link
+            to="/settings"
+            title={user?.email ?? "Einstellungen"}
+            aria-label="Einstellungen"
+            className="h-10 w-10 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider hover:opacity-90 transition-opacity no-underline"
           >
             {initialsFrom(user)}
-          </div>
+          </Link>
         </div>
       </nav>
 
