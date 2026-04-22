@@ -108,7 +108,11 @@ export type Database = {
           created_at: string
           id: string
           nickname: string | null
+          notify_letter_heart: boolean
+          notify_product_updates: boolean
+          notify_weekly_reminder: boolean
           onboarded_at: string | null
+          show_in_feed_default: boolean
           updated_at: string
           user_id: string
         }
@@ -118,7 +122,11 @@ export type Database = {
           created_at?: string
           id?: string
           nickname?: string | null
+          notify_letter_heart?: boolean
+          notify_product_updates?: boolean
+          notify_weekly_reminder?: boolean
           onboarded_at?: string | null
+          show_in_feed_default?: boolean
           updated_at?: string
           user_id: string
         }
@@ -128,7 +136,11 @@ export type Database = {
           created_at?: string
           id?: string
           nickname?: string | null
+          notify_letter_heart?: boolean
+          notify_product_updates?: boolean
+          notify_weekly_reminder?: boolean
           onboarded_at?: string | null
+          show_in_feed_default?: boolean
           updated_at?: string
           user_id?: string
         }

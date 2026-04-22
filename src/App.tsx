@@ -11,6 +11,7 @@ import SignIn from "./pages/SignIn.tsx";
 import AppHome from "./pages/AppHome.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Write from "./pages/Write.tsx";
+import Settings from "./pages/Settings.tsx";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,14 @@ const App = () => (
               element={
                 <RequireAuth>
                   <Write />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Settings />
                 </RequireAuth>
               }
             />
