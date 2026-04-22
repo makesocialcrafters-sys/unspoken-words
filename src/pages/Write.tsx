@@ -181,12 +181,14 @@ const Write = () => {
             >
               Abmelden
             </button>
-            <div
-              title={user?.email ?? ""}
-              className="h-9 w-9 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider"
+            <Link
+              to="/settings"
+              title={user?.email ?? "Einstellungen"}
+              aria-label="Einstellungen"
+              className="h-9 w-9 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider hover:opacity-90 transition-opacity no-underline"
             >
               {initialsFrom(nickname, user?.email)}
-            </div>
+            </Link>
           </div>
         </div>
       </nav>
