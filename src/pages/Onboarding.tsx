@@ -79,7 +79,7 @@ const Onboarding = () => {
       setSubmitting(false);
       return;
     }
-    navigate("/app", { replace: true });
+    navigate("/write", { replace: true });
   };
 
   if (authLoading || checking) {
