@@ -144,10 +144,6 @@ const Write = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/signin", { replace: true });
-  };
 
   if (authLoading || checking) {
     return (
