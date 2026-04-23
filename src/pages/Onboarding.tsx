@@ -185,14 +185,6 @@ const Onboarding = () => {
               >
                 {submitting ? "Wird gespeichert..." : "Meinen ersten Moment schreiben"}
               </button>
-              <div className="mt-5 text-center">
-                <Link
-                  to="/app"
-                  className="text-xs tracking-[0.2em] uppercase text-cream/50 hover:text-cream/80 transition-colors"
-                >
-                  Überspringen
-                </Link>
-              </div>
             </div>
           </form>
         </div>
