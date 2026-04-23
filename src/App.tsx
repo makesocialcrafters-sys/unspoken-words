@@ -12,6 +12,7 @@ import AppHome from "./pages/AppHome.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Write from "./pages/Write.tsx";
 import Settings from "./pages/Settings.tsx";
+import Feed from "./pages/Feed.tsx";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <RequireAuth>
                   <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/feed"
+              element={
+                <RequireAuth>
+                  <Feed />
                 </RequireAuth>
               }
             />
