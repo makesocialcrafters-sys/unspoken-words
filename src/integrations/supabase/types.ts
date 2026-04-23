@@ -101,6 +101,78 @@ export type Database = {
         }
         Relationships: []
       }
+      letters: {
+        Row: {
+          ai_response: string | null
+          content: string
+          created_at: string
+          id: string
+          is_public: boolean
+          mood_tags: string[] | null
+          recipient: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_response?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          mood_tags?: string[] | null
+          recipient?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_response?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          mood_tags?: string[] | null
+          recipient?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          created_at: string
+          id: string
+          letter_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          letter_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          letter_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_letter_id_fkey"
+            columns: ["letter_id"]
+            isOneToOne: false
+            referencedRelation: "letter_like_counts"
+            referencedColumns: ["letter_id"]
+          },
+          {
+            foreignKeyName: "likes_letter_id_fkey"
+            columns: ["letter_id"]
+            isOneToOne: false
+            referencedRelation: "letters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_group: string | null
@@ -172,7 +244,13 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      letter_like_counts: {
+        Row: {
+          letter_id: string | null
+          like_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
