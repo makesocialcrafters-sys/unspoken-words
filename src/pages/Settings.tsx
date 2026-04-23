@@ -531,6 +531,19 @@ const Settings = () => {
           <SectionLabel>Profil</SectionLabel>
 
           <div className="mb-7">
+            <FieldLabel>E-Mail</FieldLabel>
+            <p
+              className="font-serif italic text-[1rem] py-2 border-b break-all"
+              style={{
+                color: "#FAF7F2",
+                borderBottomColor: "rgba(232,196,184,0.15)",
+              }}
+            >
+              {user?.email ?? "—"}
+            </p>
+          </div>
+
+          <div className="mb-7">
             <FieldLabel>Nickname</FieldLabel>
             <TextInput
               value={nickname}
