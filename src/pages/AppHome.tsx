@@ -53,12 +53,6 @@ const AppHome = () => {
         </Link>
 
         <div className="flex items-center gap-5">
-          <button
-            onClick={signOut}
-            className="text-[0.72rem] tracking-[0.15em] uppercase text-muted-warm hover:text-rose transition-colors"
-          >
-            Abmelden
-          </button>
           <Link
             to="/settings"
             title={user?.email ?? "Einstellungen"}
