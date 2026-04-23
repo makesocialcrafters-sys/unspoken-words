@@ -172,6 +172,12 @@ const Write = () => {
           </Link>
           <div className="flex items-center gap-5">
             <Link
+              to="/feed"
+              className="text-[0.65rem] tracking-[0.22em] uppercase text-cream/60 hover:text-blush transition-colors no-underline"
+            >
+              Feed
+            </Link>
+            <Link
               to="/settings"
               title={user?.email ?? "Einstellungen"}
               aria-label="Einstellungen"
