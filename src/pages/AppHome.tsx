@@ -35,10 +35,6 @@ const AppHome = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/signin", { replace: true });
-  };
 
   if (!ready) return null;
 
