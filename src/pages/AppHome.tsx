@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Feather } from "lucide-react";
+import { Feather, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -48,11 +48,12 @@ const AppHome = () => {
           </span>
         </Link>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3">
           <Link
             to="/feed"
-            className="text-[0.65rem] tracking-[0.22em] uppercase text-deep/60 hover:text-rose transition-colors no-underline"
+            className="inline-flex items-center gap-2 border border-rose/40 text-rose px-4 py-2.5 text-[0.65rem] tracking-[0.22em] uppercase hover:bg-rose hover:text-cream transition-all no-underline"
           >
+            <Heart className="h-3 w-3" strokeWidth={1.5} />
             Feed
           </Link>
           <Link
@@ -76,13 +77,22 @@ const AppHome = () => {
           Hier kannst du anfangen zu schreiben — sicher, anonym, ohne Urteil.
           Dein erster Moment wartet.
         </p>
-        <Link
-          to="/write"
-          className="mt-10 inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-7 py-4 text-[0.72rem] tracking-[0.18em] uppercase transition-colors"
-        >
-          <Feather className="h-3.5 w-3.5" strokeWidth={1.5} />
-          Brief schreiben
-        </Link>
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <Link
+            to="/write"
+            className="inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-7 py-4 text-[0.72rem] tracking-[0.18em] uppercase transition-colors"
+          >
+            <Feather className="h-3.5 w-3.5" strokeWidth={1.5} />
+            Brief schreiben
+          </Link>
+          <Link
+            to="/feed"
+            className="inline-flex items-center gap-2 border border-rose/40 text-rose hover:bg-rose/10 px-7 py-4 text-[0.72rem] tracking-[0.18em] uppercase transition-colors no-underline"
+          >
+            <Heart className="h-3.5 w-3.5" strokeWidth={1.5} />
+            Briefe im Feed lesen
+          </Link>
+        </div>
       </section>
     </main>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Feather, Lock, Send, Heart } from "lucide-react";
+import { Feather, Lock, Send, Heart, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -170,11 +170,12 @@ const Write = () => {
               Frauen<span className="text-rose">moment</span>
             </span>
           </Link>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
             <Link
               to="/feed"
-              className="text-[0.65rem] tracking-[0.22em] uppercase text-cream/60 hover:text-blush transition-colors no-underline"
+              className="inline-flex items-center gap-2 border border-rose/40 text-rose px-4 py-2 text-[0.62rem] tracking-[0.22em] uppercase hover:bg-rose hover:text-cream transition-all no-underline"
             >
+              <Sparkles className="h-3 w-3" strokeWidth={1.5} />
               Feed
             </Link>
             <Link
