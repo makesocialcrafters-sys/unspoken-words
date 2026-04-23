@@ -144,10 +144,6 @@ const Write = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/signin", { replace: true });
-  };
 
   if (authLoading || checking) {
     return (
@@ -175,12 +171,6 @@ const Write = () => {
             </span>
           </Link>
           <div className="flex items-center gap-5">
-            <button
-              onClick={signOut}
-              className="text-[0.68rem] tracking-[0.18em] uppercase text-cream/55 hover:text-rose transition-colors"
-            >
-              Abmelden
-            </button>
             <Link
               to="/settings"
               title={user?.email ?? "Einstellungen"}
