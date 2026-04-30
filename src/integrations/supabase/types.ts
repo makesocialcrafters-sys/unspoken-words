@@ -104,9 +104,11 @@ export type Database = {
       letters: {
         Row: {
           ai_response: string | null
+          category: string | null
           content: string
           created_at: string
           id: string
+          is_featured: boolean
           is_public: boolean
           mood_tags: string[] | null
           recipient: string | null
@@ -115,9 +117,11 @@ export type Database = {
         }
         Insert: {
           ai_response?: string | null
+          category?: string | null
           content: string
           created_at?: string
           id?: string
+          is_featured?: boolean
           is_public?: boolean
           mood_tags?: string[] | null
           recipient?: string | null
@@ -126,9 +130,11 @@ export type Database = {
         }
         Update: {
           ai_response?: string | null
+          category?: string | null
           content?: string
           created_at?: string
           id?: string
+          is_featured?: boolean
           is_public?: boolean
           mood_tags?: string[] | null
           recipient?: string | null
