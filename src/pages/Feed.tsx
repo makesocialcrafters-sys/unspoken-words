@@ -338,17 +338,6 @@ const Feed = () => {
 
       {/* Main content */}
       <div className="px-6 md:px-12 pt-[100px] pb-20 max-w-[1200px] mx-auto">
-        {/* Live badge */}
-        <div className="flex items-center gap-1.5 mb-6">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose/50" />
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose" />
-          </span>
-          <span className="text-[0.58rem] tracking-[0.2em] uppercase text-rose">
-            {liveCount.toLocaleString("de-DE")} Frauen schreiben gerade
-          </span>
-        </div>
-
         {/* Header */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-10 mb-10">
           <div>
