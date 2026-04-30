@@ -1,0 +1,1 @@
+ALTER TABLE public.letters ALTER COLUMN user_id DROP NOT NULL;

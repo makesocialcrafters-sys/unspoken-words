@@ -28,6 +28,7 @@ export default {
         rose: "hsl(var(--rose))",
         "rose-deep": "hsl(var(--rose-deep))",
         deep: "hsl(var(--deep))",
+        dark: "hsl(var(--dark))",
         fog: "hsl(var(--fog))",
         "muted-warm": "hsl(var(--muted-warm))",
         primary: {

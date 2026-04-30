@@ -104,36 +104,42 @@ export type Database = {
       letters: {
         Row: {
           ai_response: string | null
+          category: string | null
           content: string
           created_at: string
           id: string
+          is_featured: boolean
           is_public: boolean
           mood_tags: string[] | null
           recipient: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           ai_response?: string | null
+          category?: string | null
           content: string
           created_at?: string
           id?: string
+          is_featured?: boolean
           is_public?: boolean
           mood_tags?: string[] | null
           recipient?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           ai_response?: string | null
+          category?: string | null
           content?: string
           created_at?: string
           id?: string
+          is_featured?: boolean
           is_public?: boolean
           mood_tags?: string[] | null
           recipient?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
