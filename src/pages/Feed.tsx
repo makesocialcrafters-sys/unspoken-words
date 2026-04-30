@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Feather, Heart, Sparkles } from "lucide-react";
+import { Feather } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -9,8 +9,9 @@ type LetterRow = {
   id: string;
   recipient: string | null;
   content: string;
+  category: string | null;
+  is_featured: boolean;
   created_at: string;
-  is_public: boolean;
 };
 
 type FeedLetter = LetterRow & {
@@ -22,10 +23,11 @@ const PAGE_SIZE = 18;
 
 const FILTERS = [
   { key: "all", label: "Alle" },
-  { key: "An meine Mutter", label: "An Mutter" },
-  { key: "An mich selbst", label: "An mich selbst" },
-  { key: "An meinen Ex", label: "An den Ex" },
-  { key: "An die Gesellschaft", label: "An die Gesellschaft" },
+  { key: "mutter", label: "An Mutter" },
+  { key: "selbst", label: "An mich selbst" },
+  { key: "ex", label: "An den Ex" },
+  { key: "körper", label: "An meinen Körper" },
+  { key: "gesellschaft", label: "An die Gesellschaft" },
   { key: "most_loved", label: "Meistgeliebt" },
 ] as const;
 
@@ -49,13 +51,6 @@ const timeAgo = (iso: string) => {
   return `vor ${d} ${d === 1 ? "Tag" : "Tagen"}`;
 };
 
-const recipientLabel = (recipient: string | null) => {
-  if (!recipient) return "An jemanden";
-  // Already contains "An" prefix? Show as-is, else prefix.
-  if (/^an\s/i.test(recipient.trim())) return recipient;
-  return `An ${recipient}`;
-};
-
 const Feed = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -65,7 +60,7 @@ const Feed = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [hasMore, setHasMore] = useState(true);
-  const [liveCount] = useState(() => 1200 + Math.floor(Math.random() * 80));
+  const [liveCount, setLiveCount] = useState(() => 1230 + Math.floor(Math.random() * 50));
   const [showNewToast, setShowNewToast] = useState(false);
   const lastSeenLatestRef = useRef<string | null>(null);
 
@@ -73,7 +68,21 @@ const Feed = () => {
     document.title = "Feed – Frauenmoment";
   }, []);
 
-  // Load nickname for avatar
+  // Live count fluctuation
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLiveCount((c) => {
+        const delta = Math.floor(Math.random() * 7) - 3;
+        const next = c + delta;
+        if (next < 1230) return 1230;
+        if (next > 1280) return 1280;
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Load nickname
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -94,19 +103,14 @@ const Feed = () => {
     async (currentFilter: FilterKey, offset: number): Promise<FeedLetter[]> => {
       let query = supabase
         .from("letters")
-        .select("id, recipient, content, created_at, is_public")
+        .select("id, recipient, content, category, is_featured, created_at")
         .eq("is_public", true);
 
       if (currentFilter !== "all" && currentFilter !== "most_loved") {
-        // Match recipient by exact value OR partial (e.g. "Meine Mutter" stored differently)
-        const tokens = currentFilter.replace(/^An\s+/i, "").split(/\s+/);
-        const main = tokens[tokens.length - 1];
-        query = query.ilike("recipient", `%${main}%`);
+        query = query.eq("category", currentFilter);
       }
 
-      // Sort
       if (currentFilter === "most_loved") {
-        // We can't sort by aggregate easily; fetch a wider set then reorder by like_count.
         query = query.order("created_at", { ascending: false }).range(0, 99);
       } else {
         query = query
@@ -114,13 +118,13 @@ const Feed = () => {
           .range(offset, offset + PAGE_SIZE - 1);
       }
 
-      const { data: lettersData, error } = await query;
+      const { data, error } = await query;
       if (error) {
         console.error(error);
         toast.error("Konnte Briefe nicht laden.");
         return [];
       }
-      const rows = (lettersData ?? []) as LetterRow[];
+      const rows = (data ?? []) as LetterRow[];
       if (rows.length === 0) return [];
 
       const ids = rows.map((r) => r.id);
@@ -149,9 +153,7 @@ const Feed = () => {
       }));
 
       if (currentFilter === "most_loved") {
-        enriched = enriched
-          .sort((a, b) => b.like_count - a.like_count)
-          .slice(0, PAGE_SIZE);
+        enriched = enriched.sort((a, b) => b.like_count - a.like_count).slice(0, PAGE_SIZE);
       }
 
       return enriched;
@@ -177,7 +179,7 @@ const Feed = () => {
     };
   }, [filter, fetchLetters]);
 
-  // Live polling for new letters
+  // Polling for new letters every 60s
   useEffect(() => {
     if (filter !== "all") return;
     const interval = setInterval(async () => {
@@ -226,7 +228,6 @@ const Feed = () => {
       return;
     }
     const wasLiked = letter.liked_by_me;
-    // Optimistic update
     setLetters((prev) =>
       prev.map((l) =>
         l.id === letter.id
@@ -246,7 +247,6 @@ const Feed = () => {
         .eq("letter_id", letter.id);
       if (error) {
         toast.error("Konnte das Herz nicht zurücknehmen.");
-        // Revert
         setLetters((prev) =>
           prev.map((l) =>
             l.id === letter.id
@@ -284,106 +284,100 @@ const Feed = () => {
   if (authLoading) return null;
 
   return (
-    <main className="min-h-screen bg-deep text-cream relative overflow-x-hidden">
-      {/* Ambient glows */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -top-24 -right-24 h-[600px] w-[600px] rounded-full bg-rose/[0.06] blur-3xl" />
-        <div className="absolute bottom-24 -left-12 h-[400px] w-[400px] rounded-full bg-blush/[0.05] blur-3xl" />
-      </div>
-
-      {/* New letters toast */}
-      {showNewToast && (
-        <button
-          onClick={reloadFromTop}
-          className="fixed top-24 left-1/2 -translate-x-1/2 z-50 inline-flex items-center gap-2 bg-rose/90 backdrop-blur text-cream px-5 py-2.5 text-[0.7rem] tracking-[0.18em] uppercase shadow-lg animate-fade-up"
-        >
-          <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
-          Neue Briefe im Feed
-        </button>
-      )}
+    <main className="min-h-screen bg-dark text-cream relative overflow-x-hidden font-sans font-light">
+      {/* Toast */}
+      <button
+        onClick={reloadFromTop}
+        className={`fixed top-[90px] left-1/2 -translate-x-1/2 z-[200] backdrop-blur-md bg-rose/[0.12] border border-rose/25 px-6 py-2.5 text-[0.7rem] tracking-[0.18em] uppercase text-blush transition-all duration-400 ${
+          showNewToast ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-5 pointer-events-none"
+        }`}
+      >
+        ✦ Neue Briefe im Feed
+      </button>
 
       {/* Nav */}
-      <nav className="fixed top-0 inset-x-0 z-40 backdrop-blur-md bg-deep/70 border-b border-blush/10">
-        <div className="flex items-center justify-between px-6 md:px-12 py-5">
-          <Link to="/app" className="inline-flex items-center gap-3 no-underline">
-            <Feather className="h-4 w-4 text-rose" strokeWidth={1.5} />
-            <span className="font-serif text-base tracking-[0.2em] uppercase text-cream">
-              Frauen<span className="text-rose">moment</span>
-            </span>
+      <nav className="fixed top-0 inset-x-0 z-[100] flex items-center justify-between px-6 md:px-12 py-[22px] backdrop-blur-[14px] bg-dark/85 border-b border-blush/[0.06]">
+        <Link to="/app" className="flex items-center gap-2.5 no-underline">
+          <Feather className="h-4 w-4 text-rose" strokeWidth={1.5} />
+          <span className="font-serif text-[1.1rem] tracking-[0.18em] uppercase text-cream">
+            Frauen<span className="text-rose">moment</span>
+          </span>
+        </Link>
+
+        <div className="hidden md:flex border border-blush/10">
+          {navTabs.map((t, i) => (
+            <Link
+              key={t.to}
+              to={t.to}
+              className={`px-[22px] py-[9px] text-[0.68rem] tracking-[0.14em] uppercase transition-colors no-underline ${
+                i < navTabs.length - 1 ? "border-r border-blush/10" : ""
+              } ${t.active ? "text-cream bg-rose/[0.12]" : "text-muted-warm hover:text-blush"}`}
+            >
+              {t.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/write"
+            className="bg-rose hover:bg-rose-deep text-white px-[22px] py-[9px] text-[0.68rem] tracking-[0.14em] uppercase transition-colors no-underline"
+          >
+            Schreiben
           </Link>
-
-          <div className="hidden md:flex items-center gap-1">
-            {navTabs.map((t) => (
-              <Link
-                key={t.to}
-                to={t.to}
-                className={`px-4 py-2 text-[0.65rem] tracking-[0.22em] uppercase transition-colors no-underline ${
-                  t.active
-                    ? "text-blush"
-                    : "text-cream/50 hover:text-blush"
-                }`}
-              >
-                {t.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/write"
-              className="inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-4 py-2 text-[0.65rem] tracking-[0.18em] uppercase transition-colors"
-            >
-              <Feather className="h-3 w-3" strokeWidth={1.5} />
-              Schreiben
-            </Link>
-            <Link
-              to="/settings"
-              title={user?.email ?? "Einstellungen"}
-              aria-label="Einstellungen"
-              className="h-9 w-9 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider hover:opacity-90 transition-opacity no-underline"
-            >
-              {initialsFrom(nickname, user?.email)}
-            </Link>
-          </div>
+          <Link
+            to="/settings"
+            title={user?.email ?? "Einstellungen"}
+            aria-label="Einstellungen"
+            className="h-9 w-9 rounded-full bg-rose text-cream flex items-center justify-center font-serif text-sm tracking-wider hover:opacity-90 transition-opacity no-underline"
+          >
+            {initialsFrom(nickname, user?.email)}
+          </Link>
         </div>
       </nav>
 
-      {/* Header */}
-      <header className="relative z-10 px-6 md:px-14 pt-32 pb-10 max-w-[1400px] mx-auto">
-        <div className="inline-flex items-center gap-2 mb-8">
+      {/* Main content */}
+      <div className="px-6 md:px-12 pt-[100px] pb-20 max-w-[1200px] mx-auto">
+        {/* Live badge */}
+        <div className="flex items-center gap-1.5 mb-6">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose/70" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose/50" />
             <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose" />
           </span>
-          <span className="text-[0.6rem] tracking-[0.28em] uppercase text-rose">
+          <span className="text-[0.58rem] tracking-[0.2em] uppercase text-rose">
             {liveCount.toLocaleString("de-DE")} Frauen schreiben gerade
           </span>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
-          <h1 className="font-serif text-[2.4rem] md:text-[3.6rem] leading-[1.1] text-cream max-w-[720px] text-balance">
-            Worte die{" "}
-            <em className="italic font-serif text-blush">endlich existieren.</em>
-          </h1>
-          <p className="text-[0.85rem] leading-[1.7] text-cream/55 max-w-[280px] md:text-right">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 md:gap-10 mb-10">
+          <div>
+            <div className="text-[0.62rem] tracking-[0.32em] uppercase text-rose mb-2.5">
+              Gemeinsam anonym
+            </div>
+            <h1 className="font-serif text-[2.4rem] md:text-[2.8rem] leading-[1.1] text-cream">
+              Worte die
+              <br />
+              <em className="italic font-serif text-blush">endlich existieren.</em>
+            </h1>
+          </div>
+          <p className="text-[0.82rem] leading-[1.7] text-muted-warm max-w-[300px] md:text-right">
             Alle Briefe sind anonym. Du kannst nur ein Herz geben — kein Kommentar, kein Urteil.
           </p>
         </div>
-      </header>
 
-      {/* Filter bar */}
-      <div className="relative z-10 px-6 md:px-14 max-w-[1400px] mx-auto pb-10">
-        <div className="flex flex-wrap gap-2">
+        {/* Filter chips */}
+        <div className="flex flex-wrap gap-2 mb-9">
           {FILTERS.map((f) => {
             const active = f.key === filter;
             return (
               <button
                 key={f.key}
                 onClick={() => setFilter(f.key)}
-                className={`px-4 py-2 text-[0.65rem] tracking-[0.18em] uppercase border transition-all ${
+                className={`px-[18px] py-[7px] text-[0.7rem] tracking-[0.1em] uppercase border transition-all ${
                   active
-                    ? "border-rose text-rose bg-rose/[0.08]"
-                    : "border-blush/15 text-cream/55 hover:border-rose/40 hover:text-blush"
+                    ? "bg-rose/10 border-rose text-cream"
+                    : "border-blush/[0.12] text-muted-warm hover:border-rose/30 hover:text-blush"
                 }`}
               >
                 {f.label}
@@ -391,21 +385,13 @@ const Feed = () => {
             );
           })}
         </div>
-      </div>
 
-      {/* Feed grid */}
-      <section className="relative z-10 px-6 md:px-14 max-w-[1400px] mx-auto pb-32">
+        {/* Feed */}
         {loading ? (
-          <div className="flex items-center justify-center py-24">
+          <div className="flex items-center justify-center py-24 gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" />
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse mx-2"
-              style={{ animationDelay: "0.2s" }}
-            />
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse"
-              style={{ animationDelay: "0.4s" }}
-            />
+            <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.2s" }} />
+            <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.4s" }} />
           </div>
         ) : letters.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-24 max-w-md mx-auto">
@@ -414,7 +400,7 @@ const Feed = () => {
             </p>
             <Link
               to="/write"
-              className="inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-7 py-3.5 text-[0.7rem] tracking-[0.18em] uppercase transition-colors"
+              className="inline-flex items-center gap-2 bg-rose hover:bg-rose-deep text-cream px-7 py-3.5 text-[0.7rem] tracking-[0.18em] uppercase transition-colors no-underline"
             >
               <Feather className="h-3.5 w-3.5" strokeWidth={1.5} />
               Brief schreiben
@@ -422,47 +408,48 @@ const Feed = () => {
           </div>
         ) : (
           <>
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-5 [column-fill:_balance]">
+            <div className="columns-1 md:columns-2 lg:columns-3 gap-5">
               {letters.map((letter, idx) => (
                 <article
                   key={letter.id}
                   style={{
                     animationDelay: `${Math.min(idx, 17) * 70}ms`,
+                    opacity: 0,
+                    animation: `fadeCard 0.7s ease ${Math.min(idx, 17) * 70}ms forwards`,
                   }}
-                  className="break-inside-avoid mb-5 inline-block w-full bg-cream/[0.025] border border-blush/10 p-7 transition-all duration-300 hover:border-blush/30 hover:bg-cream/[0.045] hover:-translate-y-[3px] animate-fade-up"
+                  className={`break-inside-avoid mb-5 p-7 border transition-all duration-[350ms] hover:-translate-y-[3px] ${
+                    letter.is_featured
+                      ? "bg-rose/[0.05] border-rose/15 hover:border-rose/30"
+                      : "bg-white/[0.025] border-blush/[0.08] hover:border-blush/20 hover:bg-white/[0.04]"
+                  }`}
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="h-px w-6 bg-rose/60" />
-                    <span className="text-[0.6rem] tracking-[0.22em] uppercase text-rose">
-                      {recipientLabel(letter.recipient)}
-                    </span>
+                  <div className="flex items-center gap-2 mb-3.5 text-[0.6rem] tracking-[0.22em] uppercase text-rose">
+                    <span className="h-px w-4 bg-rose/50 flex-shrink-0" />
+                    {letter.recipient ?? "An jemanden"}
                   </div>
 
-                  <p className="font-serif italic text-[1.05rem] leading-[1.8] text-cream/90 whitespace-pre-wrap mb-6">
+                  <p className="font-serif italic text-[1.05rem] leading-[1.8] text-cream whitespace-pre-wrap mb-5">
                     {letter.content}
                   </p>
 
-                  <div className="flex justify-between items-center pt-3 border-t border-blush/5">
-                    <span className="text-[0.65rem] text-cream/35 tracking-wide">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[0.62rem] text-muted-warm/40 tracking-[0.06em]">
                       {timeAgo(letter.created_at)} · anonym
                     </span>
                     <button
                       onClick={() => toggleLike(letter)}
-                      className="group inline-flex items-center gap-1.5 text-[0.7rem] text-cream/60 hover:text-rose transition-colors"
+                      className={`flex items-center gap-1.5 text-[0.7rem] px-2.5 py-1 rounded-full transition-all duration-250 hover:bg-rose/[0.08] hover:text-rose ${
+                        letter.liked_by_me ? "text-rose" : "text-blush/40"
+                      }`}
                       aria-label={letter.liked_by_me ? "Herz zurücknehmen" : "Herz vergeben"}
                     >
-                      <Heart
-                        className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                          letter.liked_by_me
-                            ? "text-rose scale-[1.5]"
-                            : "group-hover:scale-110"
-                        }`}
-                        fill={letter.liked_by_me ? "currentColor" : "none"}
-                        strokeWidth={1.5}
-                      />
-                      <span className={letter.liked_by_me ? "text-rose" : ""}>
-                        {letter.like_count}
+                      <span
+                        className="text-base leading-none transition-transform duration-300"
+                        style={{ transform: letter.liked_by_me ? "scale(1.2)" : "scale(1)" }}
+                      >
+                        ♥
                       </span>
+                      {letter.like_count}
                     </button>
                   </div>
                 </article>
@@ -474,15 +461,22 @@ const Feed = () => {
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="border border-rose/40 text-rose px-7 py-3 text-[0.7rem] tracking-[0.18em] uppercase transition-all hover:bg-rose/10 disabled:opacity-40"
+                  className="bg-transparent border border-blush/15 text-muted-warm hover:text-cream hover:border-blush/40 px-10 py-3.5 text-[0.72rem] tracking-[0.15em] uppercase transition-colors disabled:opacity-50"
                 >
-                  {loadingMore ? "Lädt..." : "Mehr Briefe laden"}
+                  {loadingMore ? "Lädt …" : "Mehr Briefe laden"}
                 </button>
               </div>
             )}
           </>
         )}
-      </section>
+      </div>
+
+      <style>{`
+        @keyframes fadeCard {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </main>
   );
 };
