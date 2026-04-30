@@ -10,6 +10,7 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"signin" | "signup">("signup");
 
   useEffect(() => {
     document.title = "Anmelden – Frauenmoment";
@@ -38,24 +39,19 @@ const SignIn = () => {
     if (!email || !password) return;
     setLoading(true);
 
-    // Try sign in first
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (!signInError) {
-      navigate("/onboarding", { replace: true });
-      return;
-    }
-
-    // If invalid credentials, try sign up
-    if (signInError.message.toLowerCase().includes("invalid")) {
-      const { error: signUpError } = await supabase.auth.signUp({
+    if (mode === "signup") {
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: `${window.location.origin}/onboarding` },
       });
-      if (signUpError) {
-        toast.error(signUpError.message);
+      if (error) {
+        toast.error(error.message);
         setLoading(false);
+        return;
+      }
+      if (data.session) {
+        navigate("/onboarding", { replace: true });
         return;
       }
       toast.success("Konto erstellt. Bitte bestätige deine E-Mail.");
@@ -63,8 +59,15 @@ const SignIn = () => {
       return;
     }
 
-    toast.error(signInError.message);
-    setLoading(false);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      toast.error(error.message === "Invalid login credentials"
+        ? "E-Mail oder Passwort falsch."
+        : error.message);
+      setLoading(false);
+      return;
+    }
+    navigate("/onboarding", { replace: true });
   };
 
   return (
@@ -90,6 +93,28 @@ const SignIn = () => {
             <p className="mt-5 text-[0.9rem] leading-relaxed text-cream/60">
               Anonym. Ohne Urteil. Nur für dich.
             </p>
+          </div>
+
+          {/* Mode toggle */}
+          <div className="flex gap-1 mb-7 border border-cream/15 p-1">
+            <button
+              type="button"
+              onClick={() => setMode("signup")}
+              className={`flex-1 py-2.5 text-[0.7rem] tracking-[0.2em] uppercase transition-colors ${
+                mode === "signup" ? "bg-rose text-cream" : "text-cream/60 hover:text-cream"
+              }`}
+            >
+              Registrieren
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("signin")}
+              className={`flex-1 py-2.5 text-[0.7rem] tracking-[0.2em] uppercase transition-colors ${
+                mode === "signin" ? "bg-rose text-cream" : "text-cream/60 hover:text-cream"
+              }`}
+            >
+              Anmelden
+            </button>
           </div>
 
           {/* Google */}
@@ -150,7 +175,11 @@ const SignIn = () => {
               className="group relative overflow-hidden w-full bg-rose text-cream px-6 py-4 text-[0.78rem] tracking-[0.15em] uppercase mt-2 disabled:opacity-50"
             >
               <span className="relative z-10">
-                {loading ? "Einen Moment…" : "Deinen ersten Moment schreiben"}
+                {loading
+                  ? "Einen Moment…"
+                  : mode === "signup"
+                  ? "Konto erstellen"
+                  : "Anmelden"}
               </span>
               <span className="absolute inset-0 bg-rose-deep -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
             </button>
