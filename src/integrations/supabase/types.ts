@@ -113,7 +113,7 @@ export type Database = {
           mood_tags: string[] | null
           recipient: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           ai_response?: string | null
@@ -126,7 +126,7 @@ export type Database = {
           mood_tags?: string[] | null
           recipient?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           ai_response?: string | null
@@ -139,7 +139,7 @@ export type Database = {
           mood_tags?: string[] | null
           recipient?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
