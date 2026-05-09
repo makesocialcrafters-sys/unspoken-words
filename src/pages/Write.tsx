@@ -385,44 +385,144 @@ const Write = () => {
             </div>
           </div>
 
-          {/* Loading */}
-          {sending && !reply && (
+          {/* Initial loading */}
+          {sending && (
             <div className="mt-10 flex items-center gap-3 px-2 py-6">
               <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" />
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse"
-                style={{ animationDelay: "0.2s" }}
-              />
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse"
-                style={{ animationDelay: "0.4s" }}
-              />
+              <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.2s" }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.4s" }} />
               <span className="ml-3 font-serif italic text-base text-cream/55">
                 Frauenmoment liest deinen Brief...
               </span>
             </div>
           )}
+          </>)}
 
-          {/* Response */}
-          {reply && (
-            <div ref={responseRef} className="mt-12 animate-fade-up">
-              <div className="flex items-center gap-4 mb-7">
+          {/* Chat thread */}
+          {chat.length > 0 && (
+            <div ref={responseRef} className="animate-fade-up">
+              <div className="flex items-center gap-4 mb-8">
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blush/20 to-transparent" />
                 <span className="text-[0.6rem] tracking-[0.28em] uppercase text-rose shrink-0">
-                  Frauenmoment antwortet
+                  Im Gespräch mit Frauenmoment
                 </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blush/20 to-transparent" />
               </div>
 
-              <div className="relative bg-rose/[0.04] border border-rose/10 p-7 md:p-12">
-                <p className="text-[0.62rem] tracking-[0.22em] uppercase text-rose mb-5">
-                  Von Frauenmoment
-                </p>
-                <p className="font-serif italic text-[1.05rem] md:text-[1.1rem] leading-[1.9] text-cream/90 whitespace-pre-wrap">
-                  {reply}
-                </p>
+              <div className="space-y-5">
+                {chat.map((m, i) => {
+                  const isUser = m.role === "user";
+                  const isFirst = i === 0;
+                  return (
+                    <div
+                      key={i}
+                      className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[88%] p-5 md:p-6 border ${
+                          isUser
+                            ? "bg-cream/[0.03] border-blush/15 text-cream"
+                            : "bg-rose/[0.05] border-rose/15 text-cream/90"
+                        }`}
+                      >
+                        <p className={`text-[0.58rem] tracking-[0.22em] uppercase mb-3 ${
+                          isUser ? "text-cream/40" : "text-rose"
+                        }`}>
+                          {isUser ? (isFirst ? "Dein Brief" : "Du") : "Frauenmoment"}
+                        </p>
+                        <p className="font-serif italic text-[1.02rem] md:text-[1.08rem] leading-[1.85] whitespace-pre-wrap">
+                          {m.content}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
 
-                <div className="mt-7 flex flex-wrap gap-3">
+                {sending && (
+                  <div className="flex justify-start">
+                    <div className="flex items-center gap-2 px-5 py-4 bg-rose/[0.05] border border-rose/15">
+                      <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.2s" }} />
+                      <span className="h-1.5 w-1.5 rounded-full bg-rose animate-pulse" style={{ animationDelay: "0.4s" }} />
+                    </div>
+                  </div>
+                )}
+                <div ref={chatEndRef} />
+              </div>
+
+              {/* Closed view: original letter shown back */}
+              {closed && (
+                <div className="mt-12 animate-fade-up">
+                  <div className="flex items-center gap-4 mb-7">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-rose/30 to-transparent" />
+                    <span className="text-[0.6rem] tracking-[0.28em] uppercase text-rose shrink-0">
+                      Dein Brief — für dich
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-rose/30 to-transparent" />
+                  </div>
+                  <div className="relative bg-cream/[0.02] border border-blush/15 p-7 md:p-12">
+                    <span className="pointer-events-none absolute top-3 left-3 h-5 w-5 border-t border-l border-rose/30" />
+                    <span className="pointer-events-none absolute bottom-3 right-3 h-5 w-5 border-b border-r border-rose/30" />
+                    <p className="font-serif italic text-xl text-blush/80 mb-5">
+                      {salutation}
+                    </p>
+                    <p className="font-serif text-[1.1rem] leading-[1.9] text-cream whitespace-pre-wrap">
+                      {originalLetter}
+                    </p>
+                    <div className="mt-8 pt-5 border-t border-blush/10 flex justify-end">
+                      <p className="font-serif italic text-base text-cream/40">
+                        {nickname ? `— ${nickname}` : "— anonym"}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-5 text-center font-serif italic text-cream/55 text-[0.95rem]">
+                    Das hast du gesagt. Das gehört jetzt dir.
+                  </p>
+                </div>
+              )}
+
+              {/* Follow-up input or final actions */}
+              {!closed ? (
+                <div className="mt-8">
+                  <div className="flex items-end gap-3 bg-cream/[0.02] border border-blush/15 focus-within:border-rose/40 transition-colors p-3">
+                    <textarea
+                      value={followUp}
+                      onChange={(e) => setFollowUp(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleFollowUp();
+                        }
+                      }}
+                      placeholder="Schreib weiter..."
+                      rows={2}
+                      maxLength={2000}
+                      disabled={sending}
+                      className="flex-1 bg-transparent border-0 outline-none resize-none font-serif text-[1.02rem] leading-[1.7] text-cream placeholder:text-cream/35 placeholder:italic caret-rose min-h-[48px]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleFollowUp}
+                      disabled={!followUp.trim() || sending}
+                      className="inline-flex items-center gap-2 bg-rose text-cream px-5 py-2.5 text-[0.65rem] tracking-[0.16em] uppercase transition-all hover:bg-rose-deep disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      Senden
+                    </button>
+                  </div>
+                  <div className="mt-5 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="inline-flex items-center gap-2 border border-rose/30 text-rose px-6 py-2.5 text-[0.65rem] tracking-[0.16em] uppercase transition-all hover:bg-rose/10"
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                      Brief abschließen
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-8 flex flex-wrap justify-center gap-3">
                   <button
                     type="button"
                     disabled={isPrivate}
@@ -440,7 +540,7 @@ const Write = () => {
                     Neuen Brief schreiben
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           )}
         </div>
