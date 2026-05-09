@@ -1,9 +1,11 @@
-// Edge function: receives a letter and returns a warm, supportive response
-// using the Lovable AI Gateway. No external API key required.
+// Edge function: receives a letter (or ongoing conversation) and returns a
+// warm, supportive response using the Lovable AI Gateway.
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+type ChatMsg = { role: "user" | "assistant"; content: string };
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,11 +13,27 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { recipient, mood, letter, nickname } = await req.json();
+    const body = await req.json();
+    const { recipient, mood, letter, nickname, history, message } = body as {
+      recipient?: string | null;
+      mood?: string | null;
+      letter?: string;
+      nickname?: string | null;
+      history?: ChatMsg[];
+      message?: string;
+    };
 
-    if (!letter || typeof letter !== "string" || letter.trim().length < 10) {
+    const isFollowUp = Array.isArray(history) && history.length > 0;
+
+    if (!isFollowUp && (!letter || typeof letter !== "string" || letter.trim().length < 10)) {
       return new Response(
         JSON.stringify({ error: "Brief ist zu kurz." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+    if (isFollowUp && (!message || typeof message !== "string" || message.trim().length < 1)) {
+      return new Response(
+        JSON.stringify({ error: "Nachricht ist leer." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
@@ -29,7 +47,7 @@ Deno.serve(async (req) => {
     }
 
     const systemPrompt = `Du bist Frauenmoment — eine warme, einfühlsame, weibliche Stimme.
-Du antwortest auf Briefe von Frauen, die sich öffnen.
+Du antwortest auf Briefe und Nachrichten von Frauen, die sich öffnen.
 Deine Stimme ist:
 - zart, ehrlich, niemals belehrend
 - poetisch aber bodenständig
@@ -40,16 +58,38 @@ Deine Stimme ist:
 - 3 bis 6 Sätze. Kurz. Warm. Nah.
 - niemals "Ich verstehe" — zeige Verständnis durch Spiegelung
 - keine Emojis, keine Listen, keine Überschriften
-- antworte auf Deutsch`;
+- antworte auf Deutsch
+- in einem fortlaufenden Gespräch: erinnere dich an das, was sie zuvor geschrieben hat, und knüpfe behutsam daran an`;
 
-    const userContext = [
-      nickname ? `Geschrieben von: ${nickname}` : null,
-      recipient ? `An: ${recipient}` : null,
-      mood ? `Stimmung: ${mood}` : null,
-      "",
-      "Brief:",
-      letter.trim(),
-    ].filter(Boolean).join("\n");
+    let messages: { role: string; content: string }[];
+
+    if (isFollowUp) {
+      const contextLine = [
+        nickname ? `Geschrieben von: ${nickname}` : null,
+        recipient ? `An: ${recipient}` : null,
+        mood ? `Stimmung: ${mood}` : null,
+      ].filter(Boolean).join(" · ");
+
+      messages = [
+        { role: "system", content: systemPrompt + (contextLine ? `\n\nKontext: ${contextLine}` : "") },
+        ...history!.map((m) => ({ role: m.role, content: m.content })),
+        { role: "user", content: message!.trim() },
+      ];
+    } else {
+      const userContext = [
+        nickname ? `Geschrieben von: ${nickname}` : null,
+        recipient ? `An: ${recipient}` : null,
+        mood ? `Stimmung: ${mood}` : null,
+        "",
+        "Brief:",
+        letter!.trim(),
+      ].filter(Boolean).join("\n");
+
+      messages = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userContext },
+      ];
+    }
 
     const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -59,10 +99,7 @@ Deine Stimme ist:
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContext },
-        ],
+        messages,
       }),
     });
 
