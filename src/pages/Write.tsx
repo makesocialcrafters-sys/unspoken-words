@@ -56,9 +56,13 @@ const Write = () => {
   const [mood, setMood] = useState<string | null>(null);
   const [isPrivate, setIsPrivate] = useState(false);
   const [sending, setSending] = useState(false);
-  const [reply, setReply] = useState<string | null>(null);
+  const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [followUp, setFollowUp] = useState("");
+  const [closed, setClosed] = useState(false);
+  const [originalLetter, setOriginalLetter] = useState("");
 
   const responseRef = useRef<HTMLDivElement | null>(null);
+  const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     document.title = "Dein Moment – Frauenmoment";
