@@ -101,7 +101,6 @@ const Write = () => {
   const handleSend = async () => {
     if (!canSend) return;
     setSending(true);
-    setReply(null);
     try {
       const { data, error } = await supabase.functions.invoke("letter-respond", {
         body: {
@@ -116,17 +115,21 @@ const Write = () => {
         toast.error(msg);
         return;
       }
-      const reply = (data as { reply?: string; error?: string })?.reply;
+      const replyText = (data as { reply?: string; error?: string })?.reply;
       const errMsg = (data as { error?: string })?.error;
       if (errMsg) {
         toast.error(errMsg);
         return;
       }
-      if (!reply) {
+      if (!replyText) {
         toast.error("Keine Antwort erhalten.");
         return;
       }
-      setReply(reply);
+      setOriginalLetter(letter);
+      setChat([
+        { role: "user", content: letter },
+        { role: "assistant", content: replyText },
+      ]);
       setTimeout(() => {
         responseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 80);
@@ -138,8 +141,61 @@ const Write = () => {
     }
   };
 
+  const handleFollowUp = async () => {
+    const text = followUp.trim();
+    if (!text || sending) return;
+    const newHistory = [...chat, { role: "user" as const, content: text }];
+    setChat(newHistory);
+    setFollowUp("");
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("letter-respond", {
+        body: {
+          recipient: customRecipient.trim() || recipient || null,
+          mood,
+          nickname: nickname || null,
+          history: chat,
+          message: text,
+        },
+      });
+      if (error) {
+        toast.error((error as { message?: string }).message ?? "Konnte keine Antwort schreiben.");
+        return;
+      }
+      const replyText = (data as { reply?: string; error?: string })?.reply;
+      const errMsg = (data as { error?: string })?.error;
+      if (errMsg) {
+        toast.error(errMsg);
+        return;
+      }
+      if (!replyText) {
+        toast.error("Keine Antwort erhalten.");
+        return;
+      }
+      setChat([...newHistory, { role: "assistant", content: replyText }]);
+      setTimeout(() => {
+        chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 80);
+    } catch (e) {
+      console.error(e);
+      toast.error("Unerwarteter Fehler.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleClose = () => {
+    setClosed(true);
+    setTimeout(() => {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 80);
+  };
+
   const handleNew = () => {
-    setReply(null);
+    setChat([]);
+    setClosed(false);
+    setOriginalLetter("");
+    setFollowUp("");
     setLetter("");
     setMood(null);
     setRecipient(null);
