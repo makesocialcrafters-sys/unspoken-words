@@ -257,6 +257,7 @@ const Write = () => {
             Dein Moment
           </p>
 
+          {chat.length === 0 && (<>
           {/* Recipient */}
           <div className="mb-8">
             <p className="text-[0.65rem] tracking-[0.22em] uppercase text-cream/50 mb-3">
